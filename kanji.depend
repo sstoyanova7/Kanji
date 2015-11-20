@@ -11,7 +11,8 @@
 1447929786 source:d:\okg\okg\uprajneniq\kanji\main.cpp
 	<GL/glfw.h>
 
-1447946549 source:d:\okg\uprajneniq\kanji\main.cpp
+1448029763 source:d:\okg\uprajneniq\kanji\main.cpp
 	<GL/glfw.h>
+	<cmath>
 	<iostream>
 

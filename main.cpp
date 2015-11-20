@@ -1,5 +1,5 @@
 #include <GL/glfw.h>
-
+#include <cmath>
 #include <iostream>
 using namespace std;
 
@@ -12,7 +12,7 @@ const float originalBrush = 0.4,
 void drawHorizontal(float x, float y, float z, float length)
 {
     length *= brush;
-    //glColor3ub(0, 255, 0); //top
+    //glColor3ub(0, 255, 0); //front
     glBegin(GL_POLYGON);
         glNormal3f(0.0, +1.0, 0.0);
         glVertex3f(x-length, y+depth, z+brush);
@@ -21,7 +21,7 @@ void drawHorizontal(float x, float y, float z, float length)
         glVertex3f(x-length, y+depth, z-brush);
     glEnd();
 
-    //glColor3ub(0, 255, 0); //bottom
+    //glColor3ub(0, 255, 0); //back
     glBegin(GL_POLYGON);
         glNormal3f(0.0, -1.0, 0.0);
         glVertex3f(x-length, y-depth, z+brush);
@@ -48,7 +48,7 @@ void drawHorizontal(float x, float y, float z, float length)
         glVertex3f(x+length, y+depth, z-brush);
     glEnd();
 
-    //glColor3ub(255, 0, 255); //front
+    //glColor3ub(255, 0, 255); //top
     glBegin(GL_POLYGON);
         glNormal3f(0.0, 0.0, +1.0);
         glVertex3f(x-length, y+depth, z+brush);
@@ -57,7 +57,7 @@ void drawHorizontal(float x, float y, float z, float length)
         glVertex3f(x-length, y-depth, z+brush);
     glEnd();
 
-    //glColor3ub(0, 255, 255); //back
+    //glColor3ub(0, 255, 255); //bottom
     glBegin(GL_POLYGON);
         glNormal3f(0.0, 0.0, -1.0);
         glVertex3f(x-length, y+depth, z-brush);
@@ -71,7 +71,7 @@ void drawVertical(float x, float y, float z, float length)
 {
     length *= brush;
 
-    //glColor3ub(255, 0, 0); //top
+    //glColor3ub(255, 0, 0); //front
     glBegin(GL_POLYGON);
         glNormal3f(0.0, +1.0, 0.0);
         glVertex3f(x-brush, y+depth, z+length);
@@ -80,7 +80,7 @@ void drawVertical(float x, float y, float z, float length)
         glVertex3f(x-brush, y+depth, z-length);
     glEnd();
 
-    //glColor3ub(0, 255, 0); //bottom
+    //glColor3ub(0, 255, 0); //back
     glBegin(GL_POLYGON);
         glNormal3f(0.0, -1.0, 0.0);
         glVertex3f(x-brush, y-depth, z+length);
@@ -107,7 +107,7 @@ void drawVertical(float x, float y, float z, float length)
         glVertex3f(x+brush, y+depth, z-length);
     glEnd();
 
-    //glColor3ub(255, 0, 255); //front
+    //glColor3ub(255, 0, 255); //top
     glBegin(GL_POLYGON);
         glNormal3f(0.0, 0.0, +1.0);
         glVertex3f(x-brush, y+depth, z+length);
@@ -116,7 +116,7 @@ void drawVertical(float x, float y, float z, float length)
         glVertex3f(x-brush, y-depth, z+length);
     glEnd();
 
-    //glColor3ub(0, 255, 255); //back
+    //glColor3ub(0, 255, 255); //bottom
     glBegin(GL_POLYGON);
         glNormal3f(0.0, 0.0, -1.0);
         glVertex3f(x-brush, y+depth, z-length);
@@ -124,6 +124,70 @@ void drawVertical(float x, float y, float z, float length)
         glVertex3f(x+brush, y-depth, z-length);
         glVertex3f(x-brush, y-depth, z-length);
     glEnd();
+}
+
+void drawRingPart(float x, float y, float z, float Rx, float Ry, float Rz, float angle, float R)
+{
+    //float R = sqrt(pow((x - Rx),2) + pow((z - Rz),2));
+    double startAngle = acos((z - Rz)/R);
+    startAngle = 0;
+    angle+=startAngle;
+    glBegin(GL_POLYGON);
+        glNormal3f(sin(angle), 0, cos(angle));
+        glVertex3f(x+(R-brush)*cos(startAngle), y + depth, z-(R-brush)*sin(startAngle));
+        glVertex3f(x+(R+brush)*cos(startAngle), y + depth, z-(R+brush)*sin(startAngle));
+        glVertex3f(x+(R+brush)*cos(startAngle), y - depth, z-(R+brush)*sin(startAngle));
+        glVertex3f(x+(R-brush)*cos(startAngle), y - depth, z-(R-brush)*sin(startAngle));
+    glEnd();
+    float width = M_PI/180;
+    //for(float i = startAngle; i < angle; i += width)
+    for (float i = startAngle; fabs(i) < fabs(angle); i += width)
+    {
+        glBegin(GL_POLYGON); //front
+            glNormal3f(0.0, +1.0, 0.0);
+            glVertex3f(x+(R-brush)*cos(i-width), y + depth, z-(R-brush)*sin(i-width));
+            glVertex3f(x+(R+brush)*cos(i-width), y + depth, z-(R+brush)*sin(i-width));
+            glVertex3f(x+(R+brush)*cos(i+width), y + depth, z-(R+brush)*sin(i+width));
+            glVertex3f(x+(R-brush)*cos(i+width), y + depth, z-(R-brush)*sin(i+width));
+        glEnd();
+
+        glBegin(GL_POLYGON); // back
+            glNormal3f(0.0, -1.0, 0.0);
+            glVertex3f(x+(R-brush)*cos(i-width), y - depth, z-(R-brush)*sin(i-width));
+            glVertex3f(x+(R+brush)*cos(i-width), y - depth, z-(R+brush)*sin(i-width));
+            glVertex3f(x+(R+brush)*cos(i+width), y - depth, z-(R+brush)*sin(i+width));
+            glVertex3f(x+(R-brush)*cos(i+width), y - depth, z-(R-brush)*sin(i+width));
+        glEnd();
+
+        glBegin(GL_POLYGON); // inside
+            glNormal3f(-cos(i+width), 0.0, sin (i+width));
+            glVertex3f(x+(R-brush)*cos(i-width), y + depth, z-(R-brush)*sin(i-width));
+            glVertex3f(x+(R-brush)*cos(i+width), y + depth, z-(R-brush)*sin(i+width));
+            glVertex3f(x+(R-brush)*cos(i+width), y - depth, z-(R-brush)*sin(i+width));
+            glVertex3f(x+(R-brush)*cos(i-width), y - depth, z-(R-brush)*sin(i-width));
+        glEnd();
+
+        glBegin(GL_POLYGON); // outside
+            glNormal3f(+cos(i+width), 0.0, -sin (i+width));
+            glVertex3f(x+(R+brush)*cos(i-width), y + depth, z-(R+brush)*sin(i-width));
+            glVertex3f(x+(R+brush)*cos(i+width), y + depth, z-(R+brush)*sin(i+width));
+            glVertex3f(x+(R+brush)*cos(i+width), y - depth, z-(R+brush)*sin(i+width));
+            glVertex3f(x+(R+brush)*cos(i-width), y - depth, z-(R+brush)*sin(i-width));
+        glEnd();
+    }
+    glBegin(GL_POLYGON);
+        glNormal3f(-1.0, 0, 0);
+        glVertex3f(x+(R-brush)*cos(angle), y + depth, z+(R-brush)*sin(angle));
+        glVertex3f(x+(R+brush)*cos(angle), y + depth, z+(R+brush)*sin(angle));
+        glVertex3f(x+(R+brush)*cos(angle), y - depth, z+(R+brush)*sin(angle));
+        glVertex3f(x+(R-brush)*cos(angle), y - depth, z+(R-brush)*sin(angle));
+    glEnd();
+
+
+
+
+
+
 }
 
 void drawLeftPart(float x, float y, float z)
@@ -138,8 +202,10 @@ void drawLeftPart(float x, float y, float z)
 void drawRightPart(float x, float y, float z)
 {
     drawVertical(  x - 2.85*originalBrush + brush, y, z + 0.35*originalBrush,         5.6);
+    drawRingPart(  x - 6.25*originalBrush + brush, y, z - 1.45*originalBrush, x - 5*originalBrush, y, z - 3.5*originalBrush, -M_PI/2.75, 3.5*originalBrush);
     drawHorizontal(x,                              y, z + 3.15*originalBrush - brush, 3.7);
     drawVertical(  x + 2.85*originalBrush - brush, y, z,                              6.3);
+    drawRingPart( x + 1.15*originalBrush,y,z-3*originalBrush,0,0,0, -M_PI/2, 1.2*originalBrush);
     drawHorizontal(x,                              y, z + 0.85*originalBrush - brush, 3.7);
     drawHorizontal(x,                              y, z - 2.45*originalBrush + brush, 3.7);
 }
@@ -183,14 +249,6 @@ int main()
 {
     bool running = 1;
 
- /*   glfwInit();
-
-    if(!glfwOpenWindow(512, 512, 0, 0, 0, 0, 8, 0, GLFW_WINDOW))
-    {
-        glfwTerminate();
-        return 0;
-    }
-*/
     init();
     glfwSetWindowTitle("Kanji");
 
@@ -204,11 +262,13 @@ int main()
         glClear(GL_COLOR_BUFFER_BIT + GL_DEPTH_BUFFER_BIT);
         glRotatef( 0.005, 0.4, -0.2, 0.7);
         glRotatef( 0.04, 0.6, -0.2, 0.7);
-
+        glColor3ub(255,0,0);
         drawLeftPart(-3.4*originalBrush, 0 , 1.5*originalBrush);
         drawRightPart(3.5*originalBrush,0,2.5*originalBrush);
         drawBottomPart(0,0,-5*originalBrush);
+
                 glfwSwapBuffers();
+
         running = !glfwGetKey(GLFW_KEY_ESC) && glfwGetWindowParam(GLFW_OPENED);
     }
     glfwTerminate();
