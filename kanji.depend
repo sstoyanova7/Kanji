@@ -1,0 +1,17 @@
+# depslib dependency file v1.0
+1447670124 source:d:\uni\okg\uprajneniq\kanji\main.cpp
+	<GL/glfw.h>
+
+1447674426 d:\programs\glfw-2.7.bin.win32\include\gl\glfw.h
+	<OpenGL/gl.h>
+	<OpenGL/glu.h>
+	<GL/gl.h>
+	<GL/glu.h>
+
+1447929786 source:d:\okg\okg\uprajneniq\kanji\main.cpp
+	<GL/glfw.h>
+
+1447946549 source:d:\okg\uprajneniq\kanji\main.cpp
+	<GL/glfw.h>
+	<iostream>
+
